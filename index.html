@@ -3,139 +3,319 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DesignAudio | AI 제품 디자인 아카이브</title>
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <title>AI TTS 음성 변환기</title>
   <style>
-    body { font-family: 'Helvetica Neue', Arial, sans-serif; }
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #e3f2fd, #fce4ec);
+      font-family: Arial, sans-serif;
+      color: #333;
+    }
+
+    .container {
+      width: min(900px, 92%);
+      margin: 40px auto;
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.16);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      text-align: center;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #777;
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
+
+    .info {
+      padding: 14px;
+      margin-bottom: 20px;
+      border-radius: 14px;
+      background: #e8f5e9;
+      color: #2e7d32;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .auth-box {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-b: 1px solid #eee;
+    }
+
+    .login-btn {
+      background: #1a1a1a;
+      color: white;
+    }
+
+    .logout-btn {
+      background: #ff5252;
+      color: white;
+    }
+
+    .option-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    select, input {
+      height: 44px;
+      padding: 0 12px;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 150px;
+      resize: vertical;
+      padding: 16px;
+      border: 1px solid #ddd;
+      border-radius: 16px;
+      font-size: 16px;
+      line-height: 1.5;
+      outline: none;
+      font-family: Arial, sans-serif;
+    }
+
+    textarea:focus, select:focus, input:focus {
+      border-color: #42a5f5;
+      box-shadow: 0 0 0 3px rgba(66, 165, 245, 0.15);
+    }
+
+    .label {
+      font-weight: bold;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    button, .download-link {
+      border: none;
+      border-radius: 12px;
+      padding: 0 18px;
+      height: 46px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.15s;
+      font-weight: bold;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    button:hover, .download-link:hover {
+      transform: translateY(-2px);
+      opacity: 0.9;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+      transform: none;
+    }
+
+    .make-btn { background: #42a5f5; color: white; }
+    .clear-btn { background: #b0bec5; color: white; }
+    .save-btn { background: #2e7d32; color: white; }
+    .download-link { background: #7e57c2; color: white; }
+
+    .hidden { display: none; }
+
+    .status {
+      min-height: 24px;
+      margin-top: 14px;
+      color: #555;
+      font-size: 14px;
+    }
+
+    .result-box {
+      margin-top: 20px;
+      padding: 18px;
+      border-radius: 18px;
+      background: #f7f9fb;
+      border: 1px solid #edf1f5;
+    }
+
+    audio {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .archive-section {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 2px dashed #ddd;
+    }
+
+    .archive-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .archive-card {
+      background: #f9f9f9;
+      border: 1px solid #e0e0e0;
+      padding: 14px;
+      border-radius: 14px;
+    }
+
+    .archive-card p {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .archive-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 6px;
+    }
+
+    .delete-btn {
+      background: none;
+      color: #ff5252;
+      padding: 0;
+      height: auto;
+      font-size: 12px;
+    }
+
+    @media (max-width: 700px) {
+      .option-box { grid-template-columns: 1fr; }
+      .button-row { justify-content: stretch; }
+      button, .download-link { width: 100%; }
+    }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+<body>
+  <div class="container">
+    <h1>AI TTS 음성 변환기</h1>
+    <div class="subtitle">텍스트를 AI 음성 mp3 파일로 변환하고 클라우드에 아카이브합니다</div>
 
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-      <div class="flex items-center gap-2">
-        <span class="text-xl font-bold tracking-tight text-slate-900">📐 DesignAudio</span>
-        <span class="bg-slate-100 text-slate-600 text-xs px-2 py-0.5 rounded-md font-medium">Product Design</span>
-      </div>
-      
-      <div>
-        <button id="btn-login" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-slate-800 transition shadow-xs">
-          구글 로그인
-        </button>
-        <div id="user-info" class="hidden flex items-center gap-4">
-          <span id="user-name" class="text-sm font-semibold text-slate-700"></span>
-          <button id="btn-logout" class="text-sm text-red-500 hover:underline font-medium">로그아웃</button>
-        </div>
+    <div class="auth-box">
+      <button id="authBtn" class="login-btn">구글 로그인</button>
+      <div id="userInfo" class="hidden" style="font-size: 14px; font-weight: bold; display: flex; align-items: center; gap: 10px;">
+        <span id="userName"></span>
+        <button id="logoutBtn" class="logout-btn" style="height: 32px; padding: 0 10px; font-size: 12px;">로그아웃</button>
       </div>
     </div>
-  </header>
 
-  <main class="flex-1 max-w-6xl w-full mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-12 gap-8">
-    
-    <section class="lg:col-span-7 bg-white p-8 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
-      <div>
-        <h2 class="text-xl font-bold text-slate-900 mb-2">💡 AI 디자인 컨셉 & 오디오 생성기</h2>
-        <p class="text-sm text-slate-500 mb-6">제품 아이디어를 입력하면 AI가 CMF와 디자인 가이드를 제안하고 오디오 파일로 변환합니다.</p>
+    <div class="info">
+      현재 구조: GitHub Pages 화면 → Google Apps Script 서버 → OpenAI TTS API → mp3 데이터 반환<br />
+      마음에 드는 음성 파일은 아래 대현님의 파이어베이스 데이터베이스에 바로 보관할 수 있습니다.
+    </div>
 
-        <div class="grid grid-cols-3 gap-3 mb-6">
-          <div class="flex flex-col gap-1">
-            <label class="text-xs font-bold text-slate-500">품질 선택</label>
-            <select id="modelSelect" class="w-full h-11 px-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:outline-none focus:border-slate-900">
-              <option value="tts-1">tts-1 (빠름)</option>
-              <option value="tts-1-hd">tts-1-hd (고품질)</option>
-            </select>
-          </div>
-          <div class="flex flex-col gap-1">
-            <label class="text-xs font-bold text-slate-500">보이스 타입</label>
-            <select id="voiceSelect" class="w-full h-11 px-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:outline-none focus:border-slate-900">
-              <option value="nova">nova (추천: 밝은 여성)</option>
-              <option value="shimmer">shimmer (지적 여성)</option>
-              <option value="echo">echo (차분한 남성)</option>
-              <option value="onyx">onyx (묵직한 남성)</option>
-              <option value="alloy">alloy (중성적)</option>
-            </select>
-          </div>
-          <div class="flex flex-col gap-1">
-            <label class="text-xs font-bold text-slate-500">말하기 속도</label>
-            <input id="speedInput" type="number" min="0.25" max="4.0" step="0.05" value="1.0" class="w-full h-11 px-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:outline-none focus:border-slate-900" />
-          </div>
-        </div>
+    <div class="option-box">
+      <select id="modelSelect">
+        <option value="tts-1">tts-1 빠른 생성</option>
+        <option value="tts-1-hd">tts-1-hd 고품질</option>
+      </select>
 
-        <div class="mb-6">
-          <label class="block text-xs font-bold text-slate-500 mb-1">디자인 영감/설명 입력</label>
-          <textarea id="textInput" placeholder="예시: 친환경 대나무 소재를 활용한 미니멀한 가습기 디자인. 센서가 부착되어 물 양을 시각적으로 투명하게 보여주는 20대 타겟의 데스크테리어 제품." class="w-full min-h-[160px] p-4 border border-slate-200 rounded-xl text-base focus:outline-none focus:border-slate-900 leading-relaxed"></textarea>
-        </div>
+      <select id="voiceSelect">
+        <option value="alloy">alloy</option>
+        <option value="echo">echo</option>
+        <option value="fable">fable</option>
+        <option value="onyx">onyx</option>
+        <option value="nova">nova</option>
+        <option value="shimmer">shimmer</option>
+      </select>
 
-        <div class="flex gap-3 justify-end">
-          <button id="clearBtn" class="bg-slate-100 text-slate-600 px-5 py-3 rounded-xl font-medium text-sm hover:bg-slate-200 transition">초기화</button>
-          <button id="makeBtn" class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold text-sm hover:bg-indigo-700 transition shadow-sm">✨ 디자인 음성 생성</button>
-        </div>
+      <input id="speedInput" type="number" min="0.25" max="4.0" step="0.05" value="1.0" placeholder="속도" />
+    </div>
 
-        <div id="status" class="mt-4 text-xs font-medium text-indigo-600 min-h-[16px]"></div>
+    <div>
+      <div class="label">변환할 텍스트</div>
+      <textarea id="textInput" placeholder="음성으로 바꿀 문장을 입력하세요. 예: 안녕하세요. 오늘은 Firebase와 OpenAI API를 활용한 웹페이지 제작을 배워보겠습니다."></textarea>
+    </div>
 
-        <div id="resultBox" class="mt-6 p-5 bg-slate-50 rounded-xl border border-slate-200 hidden animate-fade-in">
-          <div class="font-bold text-slate-800 text-sm mb-2">🎧 생성된 디자인 오디오 브리핑</div>
-          <audio id="audioPlayer" controls class="w-full mb-4"></audio>
-          
-          <div class="flex gap-2 justify-end">
-            <a id="downloadLink" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-lg text-xs font-bold hover:bg-slate-300 transition" href="#" download>mp3 다운로드</a>
-            <button id="btn-save" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-emerald-700 transition shadow-xs">💾 클라우드 아카이브에 저장</button>
-          </div>
-        </div>
+    <div class="button-row">
+      <button class="clear-btn" id="clearBtn">초기화</button>
+      <button class="make-btn" id="makeBtn">음성 만들기</button>
+    </div>
+
+    <div id="status" class="status"></div>
+
+    <div id="resultBox" class="result-box hidden">
+      <div class="label">생성된 음성</div>
+      <audio id="audioPlayer" controls></audio>
+      <div class="button-row">
+        <button class="save-btn" id="saveBtn">💾 클라우드에 저장</button>
+        <a id="downloadLink" class="download-link" href="#" download="tts-audio.mp3">mp3 다운로드</a>
       </div>
-    </section>
+    </div>
 
-    <section class="lg:col-span-5 bg-white p-8 rounded-2xl border border-slate-200 shadow-xs flex flex-col">
-      <h2 class="text-xl font-bold text-slate-900 mb-2">📂 My Design Archive</h2>
-      <p class="text-sm text-slate-500 mb-6">데이터베이스에 안전하게 기록된 나만의 디자인 영감 노트입니다.</p>
-
-      <div id="login-required-msg" class="text-center py-20 text-slate-400 text-sm border-2 border-dashed border-slate-100 rounded-xl">
-        구글 로그인 후 나만의 디자인 무드 보드를 아카이브해 보세요.
-      </div>
-
-      <div id="idea-list" class="space-y-4 max-h-[520px] overflow-y-auto hidden">
-        </div>
-    </section>
-
-  </main>
+    <div class="archive-section">
+      <div class="label" style="font-size: 18px;">📂 나의 오디오 아카이브 목록</div>
+      <div id="loginAlert" class="status" style="color: #999;">구글 로그인 후 내가 저장한 오디오 목록을 실시간으로 관리할 수 있습니다.</div>
+      <div id="archiveList" class="archive-list hidden"></div>
+    </div>
+  </div>
 
   <script type="module">
-    // Firebase 핵심 모듈 CDN 가져오기
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, collection, addDoc, query, where, orderBy, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // 1. [필수] 본인의 Firebase 웹 앱 설정 값으로 교체하세요!
+    // 🔗 대현님 맞춤형 파이어베이스 링크 주입 완료!
     const firebaseConfig = {
-      apiKey: "YOUR_FIREBASE_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyA5iOkWsSu9CC7lHWmyzzezgUawKvj2ylE",
+      authDomain: "daehyun-671a9.firebaseapp.com",
+      databaseURL: "https://daehyun-671a9-default-rtdb.firebaseio.com",
+      projectId: "daehyun-671a9",
+      storageBucket: "daehyun-671a9.firebasestorage.app",
+      messagingSenderId: "715097973145",
+      appId: "1:715097973145:web:4a079a501b77edb4e0b308",
+      measurementId: "G-HFE5Q6V6J0"
     };
 
-    // Firebase 초기화
+    // 구글 앱스 스크립트 웹앱 주소 (본인이 최종 배포한 GAS URL로 덮어쓰셔도 됩니다)
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxDNMIktE288seW2Mr5YgksYFeAP3SNl8YyQZFa1DuvD0N_8pjRLDmxkZBYyQ4WGPmt/exec';
+
+    // 파이어베이스 초기화
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
 
-    // 2. [필수] 본인이 배포한 Google Apps Script(GAS) 웹 앱 URL로 교체하세요!
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/YOUR_APPS_SCRIPT_URL_HERE/exec';
-
-    // 글로벌 데이터 상태 관리 변수
     let currentUser = null;
-    let currentSavedBase64 = ""; 
+    let currentAudioBase64 = ""; // DB 보관용 변수
 
-    // DOM 요소 선택
-    const btnLogin = document.getElementById('btn-login');
-    const btnLogout = document.getElementById('btn-logout');
-    const userInfo = document.getElementById('user-info');
-    const userName = document.getElementById('user-name');
-    const loginRequiredMsg = document.getElementById('login-required-msg');
-    const ideaList = document.getElementById('idea-list');
-    
+    // DOM 선택
+    const authBtn = document.getElementById('authBtn');
+    const userInfo = document.getElementById('userInfo');
+    const userName = document.getElementById('userName');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const loginAlert = document.getElementById('loginAlert');
+    const archiveList = document.getElementById('archiveList');
+
     const textInput = document.getElementById('textInput');
     const modelSelect = document.getElementById('modelSelect');
     const voiceSelect = document.getElementById('voiceSelect');
@@ -146,62 +326,49 @@
     const resultBox = document.getElementById('resultBox');
     const audioPlayer = document.getElementById('audioPlayer');
     const downloadLink = document.getElementById('downloadLink');
-    const btnSave = document.getElementById('btn-save');
+    const saveBtn = document.getElementById('saveBtn');
 
-    // 이벤트 리스너 연결
+    // 이벤트 리스너 리스트
     makeBtn.addEventListener('click', makeSpeech);
     clearBtn.addEventListener('click', clearPage);
-    btnLogin.addEventListener('click', login);
-    btnLogout.addEventListener('click', logout);
-    btnSave.addEventListener('click', saveToFirestore);
+    saveBtn.addEventListener('click', saveToFirebase);
+    authBtn.addEventListener('click', () => signInWithPopup(auth, provider));
+    logoutBtn.addEventListener('click', () => signOut(auth));
 
-    // ==========================================
-    // 기능 1: Firebase Authentication (유저 관리)
-    // ==========================================
+    // 구글 인증 상태 트래킹
     onAuthStateChanged(auth, (user) => {
       if (user) {
         currentUser = user;
-        btnLogin.classList.add('hidden');
+        authBtn.classList.add('hidden');
         userInfo.classList.remove('hidden');
-        userName.textContent = `${user.displayName} 디자이너`;
-        loginRequiredMsg.classList.add('hidden');
-        ideaList.classList.remove('hidden');
-        
-        // 로그인 성공 시 해당 유저 데이터 불러오기 시작
-        loadMyIdeas(user.uid);
+        userName.textContent = `${user.displayName}님 환영합니다`;
+        loginAlert.classList.add('hidden');
+        archiveList.classList.remove('hidden');
+        loadMyArchive(user.uid);
       } else {
         currentUser = null;
-        btnLogin.classList.remove('hidden');
+        authBtn.classList.remove('hidden');
         userInfo.classList.add('hidden');
-        loginRequiredMsg.classList.remove('hidden');
-        ideaList.classList.add('hidden');
-        ideaList.innerHTML = '';
+        loginAlert.classList.remove('hidden');
+        archiveList.classList.add('hidden');
+        archiveList.innerHTML = '';
       }
     });
 
-    async function login() {
-      try { await signInWithPopup(auth, provider); } 
-      catch (error) { alert("구글 로그인에 실패했습니다: " + error.message); }
-    }
-
-    function logout() { signOut(auth); }
-
-    // ==========================================
-    // 기능 2: OpenAI TTS API 연동 (via GAS)
-    // ==========================================
+    // 1. OpenAI TTS 음성 파일 요청 로직 (GAS 연동)
     async function makeSpeech() {
       const text = textInput.value.trim();
       const model = modelSelect.value;
       const voice = voiceSelect.value;
       const speed = Number(speedInput.value || 1.0);
 
-      if (!text) { alert('음성 가이드로 변환할 디자인 아이디어를 적어주세요.'); return; }
-      if (speed < 0.25 || speed > 4.0) { alert('속도는 0.25 ~ 4.0 사이여야 합니다.'); return; }
+      if (!text) { alert('음성으로 변환할 텍스트를 입력해주세요.'); return; }
+      if (speed < 0.25 || speed > 4.0) { alert('속도는 0.25부터 4.0 사이로 지정해 주세요.'); return; }
 
       try {
         setLoading(true);
         resultBox.classList.add('hidden');
-        statusBox.textContent = '🚀 Google Apps Script를 거쳐 OpenAI TTS 음성을 생성하는 중...';
+        statusBox.textContent = 'Apps Script 서버에 요청을 전송하고 목소리를 받아오는 중입니다...';
 
         const response = await fetch(APPS_SCRIPT_URL, {
           method: 'POST',
@@ -210,95 +377,87 @@
 
         const data = await response.json();
         if (data.error) throw new Error(data.error);
-        if (!data.audioBase64) throw new Error('음성 데이터 추출에 실패했습니다.');
+        if (!data.audioBase64) throw new Error('음성 바이너리 데이터를 받지 못했습니다.');
 
-        currentSavedBase64 = data.audioBase64; // DB 저장용 전역변수에 세팅
+        currentAudioBase64 = data.audioBase64;
         const audioUrl = base64ToAudioUrl(data.audioBase64, 'audio/mpeg');
 
         audioPlayer.src = audioUrl;
         downloadLink.href = audioUrl;
-        downloadLink.download = `design-brief-${Date.now()}.mp3`;
+        downloadLink.download = makeFileName();
         
         resultBox.classList.remove('hidden');
-        statusBox.textContent = '✅ 디자인 브리핑 오디오 생성 완료!';
+        statusBox.textContent = '음성 파일 인코딩 성공!';
       } catch (error) {
         console.error(error);
-        statusBox.textContent = '❌ 음성 생성에 실패했습니다.';
-        alert('에러 발생: ' + error.message);
+        statusBox.textContent = '요청 실패';
+        alert('오류가 발생했습니다.\n\n' + error.message);
       } finally {
         setLoading(false);
       }
     }
 
-    // ==========================================
-    // 기능 3: Firebase Firestore (DB 데이터 연동)
-    // ==========================================
-    async function saveToFirestore() {
-      if (!currentUser) { alert('아카이브 저장은 로그인이 필요한 서비스입니다.'); return; }
-      if (!textInput.value.trim() || !currentSavedBase64) { alert('저장할 오디오 데이터가 없습니다.'); return; }
+    // 2. 파이어베이스 데이터베이스 저장 처리
+    async function saveToFirebase() {
+      if (!currentUser) { alert('클라우드 아카이브 저장은 로그인이 필요합니다.'); return; }
+      if (!currentAudioBase64) { alert('저장할 오디오 데이터가 존재하지 않습니다.'); return; }
 
       try {
-        statusBox.textContent = '💾 Firestore 클라우드에 영감 노트 동기화 중...';
-        await addDoc(collection(db, "design_archives"), {
+        statusBox.textContent = '클라우드 DB에 동기화 중...';
+        await addDoc(collection(db, "my_tts_history"), {
           userId: currentUser.uid,
           text: textInput.value.trim(),
-          audioBase64: currentSavedBase64,
+          audioBase64: currentAudioBase64,
           createdAt: new Date()
         });
-        alert('성공적으로 디자인 아카이브에 기록되었습니다!');
-      } catch (error) {
-        alert('Firestore 저장 오류: ' + error.message);
-      } finally {
-        statusBox.textContent = '';
+        alert('성공적으로 내 보관함에 저장되었습니다!');
+        statusBox.textContent = '저장 성공';
+      } catch (e) {
+        alert('파이어베이스 저장 에러: ' + e.message);
       }
     }
 
-    // 내 아카이브 실시간 화면 렌더링
-    function loadMyIdeas(userId) {
-      const q = query(
-        collection(db, "design_archives"),
-        where("userId", "==", userId),
-        orderBy("createdAt", "desc")
-      );
-
+    // 3. 내 파이어베이스 데이터 실시간 추적 및 스트리밍 리스트 업
+    function loadMyArchive(userId) {
+      const q = query(collection(db, "my_tts_history"), where("userId", "==", userId), orderBy("createdAt", "desc"));
       onSnapshot(q, (snapshot) => {
-        ideaList.innerHTML = '';
+        archiveList.innerHTML = '';
         if (snapshot.empty) {
-          ideaList.innerHTML = '<p class="text-center py-10 text-xs text-slate-400">아직 저장된 디자인 파일이 없습니다.</p>';
+          archiveList.innerHTML = '<div style="text-align:center; padding:20px; color:#aaa; font-size:13px;">저장된 오디오 내역이 존재하지 않습니다.</div>';
           return;
         }
 
         snapshot.forEach((docSnap) => {
           const data = docSnap.data();
           const docId = docSnap.id;
-          const targetAudioUrl = base64ToAudioUrl(data.audioBase64, 'audio/mpeg');
+          const targetUrl = base64ToAudioUrl(data.audioBase64, 'audio/mpeg');
+          const dateStr = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleString() : '';
 
           const card = document.createElement('div');
-          card.className = "p-4 bg-slate-50 rounded-xl border border-slate-200 relative flex flex-col gap-2";
+          card.className = "archive-card";
           card.innerHTML = `
-            <div class="flex justify-between items-start">
-              <span class="text-[11px] text-slate-400 font-mono">${new Date(data.createdAt.seconds*1000).toLocaleDateString()}</span>
-              <button class="text-xs text-slate-400 hover:text-red-500 font-bold btn-delete" data-id="${docId}">삭제</button>
+            <div class="archive-header">
+              <span>📅 ${dateStr}</span>
+              <button class="delete-btn btn-delete" data-id="${docId}">삭제하기</button>
             </div>
-            <p class="text-xs text-slate-700 font-medium leading-relaxed bg-white p-2.5 rounded-lg border border-slate-100">${data.text}</p>
-            <audio src="${targetAudioUrl}" controls class="w-full h-8 mt-1"></audio>
+            <p><strong>대사:</strong> ${data.text}</p>
+            <audio src="${targetUrl}" controls style="height:34px; margin-top:5px;"></audio>
           `;
-          ideaList.appendChild(card);
+          archiveList.appendChild(card);
         });
 
-        // 삭제 버튼 동적 이벤트 할당
+        // 삭제 핸들러 등록
         document.querySelectorAll('.btn-delete').forEach(btn => {
           btn.addEventListener('click', async (e) => {
-            const id = e.target.getAttribute('data-id');
-            if(confirm('이 기록을 클라우드 아카이브에서 삭제하시겠습니까?')) {
-              await deleteDoc(doc(db, "design_archives", id));
+            if (confirm('이 기록을 데이터베이스에서 지우시겠습니까?')) {
+              await deleteDoc(doc(db, "my_tts_history", e.target.dataset.id));
             }
           });
         });
       });
     }
 
-    // 유틸리티 함수들
+    // 4. 유틸리티 펑션
     function base64ToAudioUrl(base64, mimeType) {
       const byteCharacters = atob(base64);
       const byteArrays = [];
@@ -306,15 +465,19 @@
         const slice = byteCharacters.slice(offset, offset + 512);
         const byteNumbers = new Array(slice.length);
         for (let i = 0; i < slice.length; i++) { byteNumbers[i] = slice.charCodeAt(i); }
-        const byteArray = new Uint8Array(byteNumbers);
-        byteArrays.push(byteArray);
+        byteArrays.push(new Uint8Array(byteNumbers));
       }
       return URL.createObjectURL(new Blob(byteArrays, { type: mimeType }));
     }
 
+    function makeFileName() {
+      const now = new Date();
+      return `tts-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}.mp3`;
+    }
+
     function setLoading(isLoading) {
       makeBtn.disabled = isLoading;
-      makeBtn.textContent = isLoading ? '생성 중...' : '✨ 디자인 음성 생성';
+      makeBtn.textContent = isLoading ? '인공지능 목소리 합성 중...' : '음성 만들기';
     }
 
     function clearPage() {
@@ -322,7 +485,7 @@
       statusBox.textContent = '';
       audioPlayer.removeAttribute('src');
       resultBox.classList.add('hidden');
-      currentSavedBase64 = "";
+      currentAudioBase64 = "";
     }
   </script>
 </body>
